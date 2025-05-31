@@ -1,0 +1,31 @@
+name: Daily Stonks Email
+
+on:
+  # Weekdays (Mon–Fri) at 21:00 UTC  ≈ 17:00 ET (adjust if DST shifts)
+  schedule:
+    - cron: '0 21 * * 1-5'
+  # Manual trigger button in the Actions tab (useful for tests)
+  workflow_dispatch:
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run stonks_emailer.py
+        run: python stonks_emailer.py
+        env:
+          GMAIL_USER:     ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASS: ${{ secrets.GMAIL_APP_PASS }}
+          TO_EMAIL:       ${{ secrets.TO_EMAIL }}
